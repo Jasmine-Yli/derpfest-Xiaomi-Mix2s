@@ -66,25 +66,20 @@ jobs:
       run: |
         mkdir -p ~/derpfest/.repo/local_manifests
         
-        # 下载 dependencies 文件
+        # 下载并转换依赖文件
         curl -L https://raw.githubusercontent.com/LineageOS/android_device_xiaomi_polaris/lineage-23.0/lineage.dependencies -o dependencies.json
         
-        # 创建 XML manifest
-        cat > ~/derpfest/.repo/local_manifests/polaris.xml << 'EOF'
-<?xml version="1.0" encoding="UTF-8"?>
-<manifest>
-EOF
+        # 使用更安全的方式创建XML文件
+        {
+          echo '<?xml version="1.0" encoding="UTF-8"?>'
+          echo '<manifest>'
+          jq -r '.[] | "  <project path=\"\(.target_path)\" name=\"\(.repository)\" remote=\"github\" revision=\"\(.branch)\" />"' dependencies.json
+          echo '</manifest>'
+        } > ~/derpfest/.repo/local_manifests/polaris.xml
         
-        # 解析 dependencies 并添加到 manifest
-        jq -r '.[] | "  <project path=\"\(.target_path)\" name=\"\(.repository)\" remote=\"github\" revision=\"\(.branch)\" />"' dependencies.json >> ~/derpfest/.repo/local_manifests/polaris.xml
-        
-        echo '</manifest>' >> ~/derpfest/.repo/local_manifests/polaris.xml
-        
-        # 验证 XML 格式
-        xmllint --noout ~/derpfest/.repo/local_manifests/polaris.xml
-        
-        # 显示创建的 manifest 内容用于调试
-        echo "=== 创建的 manifest 内容 ==="
+        # 验证并显示结果
+        xmllint --noout ~/derpfest/.repo/local_manifests/polaris.xml && echo "XML验证成功"
+        echo "=== 生成的manifest ==="
         cat ~/derpfest/.repo/local_manifests/polaris.xml
 
     - name: Sync sources
