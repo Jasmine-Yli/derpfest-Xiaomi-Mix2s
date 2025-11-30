@@ -28,7 +28,7 @@ jobs:
         fi
 
     - name: Save SHA
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: sha-record
         path: LAST_SHA
@@ -41,7 +41,7 @@ jobs:
 
     steps:
     - name: Download SHA
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: sha-record
 
@@ -77,8 +77,8 @@ jobs:
         lunch lineage_polaris-bp2a-user
         mka derp -j$(nproc)
 
-    - name: Upload Release
-      uses: actions/upload-artifact@v3
+    - name: Upload Release Artifact
+      uses: actions/upload-artifact@v4
       with:
         name: DerpFest-auto-nightly
         path: ~/derpfest/out/target/product/polaris/*
