@@ -53,6 +53,12 @@ jobs:
           libncurses5 libssl-dev ccache libxml2-utils rsync openjdk-17-jdk \
           imagemagick jq
 
+    - name: Install latest repo
+      run: |
+          sudo wget https://storage.googleapis.com/git-repo-downloads/repo -O /usr/bin/repo
+          sudo chmod a+x /usr/bin/repo
+
+
     - name: Initialize ROM source
       run: |
         mkdir -p ~/derpfest
