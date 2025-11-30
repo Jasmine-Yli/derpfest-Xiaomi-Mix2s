@@ -70,7 +70,26 @@ jobs:
         mkdir -p ~/derpfest/.repo/local_manifests
         curl -L https://raw.githubusercontent.com/LineageOS/android_device_xiaomi_polaris/lineage-23.0/lineage.dependencies \
         -o ~/derpfest/.repo/local_manifests/polaris.xml
-
+    - name: Add Polaris manifest
+      run: |
+        mkdir -p ~/derpfest/.repo/local_manifests
+         # 下载 dependencies 文件并转换为 XML
+        curl -L https://raw.githubusercontent.com/LineageOS/android_device_xiaomi_polaris/lineage-23.0/lineage.dependencies \
+        -o dependencies.json
+    
+    # 创建 XML manifest
+       cat > ~/derpfest/.repo/local_manifests/polaris.xml << 'EOF'
+       <?xml version="1.0" encoding="UTF-8"?>
+       <manifest>
+       EOF
+    
+    # 解析 dependencies 并添加到 manifest（需要 jq）
+       jq -r '.[] | "  <project path=\"\(.target_path)\" name=\"\(.repository)\" remote=\"github\" revision=\"\(.branch)\" />"' dependencies.json >> ~/derpfest/.repo/local_manifests/polaris.xml
+    
+       echo '</manifest>' >> ~/derpfest/.repo/local_manifests/polaris.xml
+    
+    # 验证 XML 格式
+    xmllint --noout ~/derpfest/.repo/local_manifests/polaris.xml
     - name: Sync
       run: |
         cd ~/derpfest
